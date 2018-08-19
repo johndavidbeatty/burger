@@ -1,14 +1,32 @@
 <h1>Burgers to MUNCH!</h1>
 
 <ul>
-  {{#each burger_name}}
+  {{#each burger_name}}    
+    {{#unless devoured}}
     <li>
       <p>
         {{this.id}}. {{this.burger_name}}
 
         <button data-burgerid="{{this.id}}" class="munch">Munch!</button>
+        <button data-burgerid="{{this.id}}" class="trash">Give Away</button>
       </p>
     </li>
+      {{/unless}}
+  {{/each}}
+</ul>
+<h1>Burgers already Chowed</h1>
+<ul>
+  {{#each burger_name}}    
+    {{#if devoured}}
+    <li>
+      <p>
+        {{this.id}}. {{this.burger_name}}
+
+        <button data-burgerid="{{this.id}}" class="munch">Munch!</button>
+        <button data-burgerid="{{this.id}}" class="trash">Delete</button>
+      </p>
+    </li>
+      {{/if}}
   {{/each}}
 </ul>
 
@@ -22,13 +40,28 @@
 <script type="text/javascript">
   $(".munch").on("click", function(event) {
     var id = $(this).data("burgerid");
+    console.log("id: ",id)
+    // Send the mod request.
+    $.ajax("/burger/" + id, {
+      type: "POST"
+    }).then(
+      function() {
+        console.log("munched burger: ", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
 
-    // Send the DELETE request.
-    $.ajax("/burgers/" + id, {
+    $(".trash").on("click", function(event) {
+    var id = $(this).data("burgerid");
+    console.log("id: ",id)
+    // Send the mod request.
+    $.ajax("/burger/" + id, {
       type: "DELETE"
     }).then(
       function() {
-        console.log("deleted burger: ", id);
+        console.log("Deleted burger: ", id);
         // Reload the page to get the updated list
         location.reload();
       }
